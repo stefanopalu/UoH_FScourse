@@ -3,6 +3,8 @@ import axios from 'axios'
 import { Person } from './components/persons'
 import { Filter } from './components/filter'
 import { PersonForm } from './components/personform'
+import personService from './services/persons'
+
 
 const App = () => {
   const [persons, setPersons] = useState([])
@@ -11,10 +13,9 @@ const App = () => {
   const [newSearch, setNewSearch] = useState("")
 
   useEffect(() => {
-    axios
-      .get('http://localhost:3001/persons')
+    personService
+      .getAll()
       .then(response => {
-        console.log('promise fulfilled')
         setPersons(response.data)
       })
   }, [])
@@ -30,10 +31,10 @@ const App = () => {
     console.log("already in list")
     alert(`${newName} is already added to phonebook`)
     } else {
-      axios
-        .post("http://localhost:3001/persons", newPerson)
+      personService
+        .create(newPerson)
         .then(response => {
-          setPersons(persons.concat(newPerson))
+          setPersons(persons.concat(response.data))
           setNewName("")
           setNewNumber("")
           console.log("added")
