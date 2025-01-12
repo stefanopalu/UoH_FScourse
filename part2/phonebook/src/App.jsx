@@ -38,10 +38,6 @@ const App = () => {
       console.log(newNumber)
       console.log(oldPerson.id)
       changeNumber({ person: oldPerson, updatedNumber: newNumber })
-      setNotificationMessage(`Number changed for ${oldPerson.name}, new number is ${newNumber}`)
-      setTimeout(() => {
-        setNotificationMessage(null)
-      }, 5000)
       setNewName("")
       setNewNumber("")
     }
@@ -82,8 +78,13 @@ const App = () => {
       .updateNumber(person.id, personChangedNumber)
       .then(response => {
         setPersons(persons.map(p => p.id === person.id ? response.data : p))
+        setNotificationMessage(`Number changed for ${person.name}. The new number is ${newNumber}`)
+        setTimeout(() => {
+          setNotificationMessage(null)
+        }, 5000)
       })
       .catch(error => {
+        console.log('Error:', error);
         console.log('fail')
         setErrorMessage(`Information of ${person.name} has already been deleted from the server`)
         setTimeout(() => {
