@@ -4,6 +4,7 @@ import { Person } from './components/persons'
 import { Filter } from './components/filter'
 import { PersonForm } from './components/personform'
 import { Notification } from './components/notification'
+import { ErrorMessage } from './components/errormessage'
 import personService from './services/persons'
 
 
@@ -12,7 +13,8 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [newSearch, setNewSearch] = useState('')
-  const [notificationMessage, setNotificationMessage] = useState('')
+  const [notificationMessage, setNotificationMessage] = useState(null)
+  const [errorMessage, setErrorMessage] = useState(null)
 
 
   useEffect(() => {
@@ -80,6 +82,13 @@ const App = () => {
       .updateNumber(person.id, personChangedNumber)
       .then(response => {
         setPersons(persons.map(p => p.id === person.id ? response.data : p))
+      })
+      .catch(error => {
+        console.log('fail')
+        setErrorMessage(`Information of ${person.name} has already been deleted from the server`)
+        setTimeout(() => {
+          setErrorMessage(null)
+        }, 5000)
     })
   }
 
@@ -106,6 +115,7 @@ const App = () => {
     <div>
       <h2>Phonebook</h2>
       <Notification message={notificationMessage} />
+      <ErrorMessage message={errorMessage} />
       <Filter value={newSearch} onChange={handleNewSearch}/>
       <h2>Add a new</h2>
       <PersonForm onSubmit={addPerson} name={newName} nameChange={handleNewName} number={newNumber} numberChange={handleNewNumber}/>
