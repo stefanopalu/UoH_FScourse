@@ -28,8 +28,12 @@ const App = () => {
     }
 
   if (persons.some(person => person.name === newName)) {
-    console.log("already in list")
-    alert(`${newName} is already added to phonebook`)
+    if (window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)){
+      const person = persons.find(person => person.name === newName)
+      console.log(newNumber)
+      console.log(person.id)
+      changeNumber({ id: person.id, updatedNumber: newNumber })
+    }
     } else {
       personService
         .create(newPerson)
@@ -43,7 +47,6 @@ const App = () => {
   }
 
   const deletePersonFrom = (id, person) => {
-
     if (window.confirm(`Delete ${person.name} ?`)) {
       personService
         .deleteFrom(id)
@@ -52,6 +55,18 @@ const App = () => {
           setPersons(persons.filter(person => person.id !== id))
       })
     }
+  }
+
+  const changeNumber = ({id, updatedNumber}) => {
+    const url = `http://localhost:3001/persons/${id}`
+    const personToChange = persons.find(person => person.id === id)
+    const personChangedNumber = { ...personToChange, number: updatedNumber }
+
+    personService
+      .updateNumber(url, personChangedNumber)
+      .then(response => {
+        setPersons(persons.map(person => person.id === id ? response.data : person))
+    })
   }
 
   const handleNewName = (event) => {
