@@ -14,6 +14,7 @@ const Country = ({country}) => {
               ))}
             </ul>
             <p style={flagStyle}>{country.flag}</p>
+            <h2>Weather in {country.capital}</h2>
         </div>
     )
 }

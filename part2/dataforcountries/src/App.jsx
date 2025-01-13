@@ -8,7 +8,6 @@ function App() {
   const [countries, setCountries] = useState([])
   const [newSearch, setNewSearch] = useState('')
 
-
   useEffect(() => {
     axios
       .get('https://studies.cs.helsinki.fi/restcountries/api/all')
@@ -19,6 +18,10 @@ function App() {
 
   const handleNewSearch = (event) => {
     setNewSearch(event.target.value)
+  }
+
+  const showCountry = (country) => {
+    setNewSearch(country.name.common)
   }
 
   const countriesToShow = newSearch
@@ -33,7 +36,10 @@ function App() {
         <p>Too many matches, specify another filter</p>
       ) : countriesToShow.length > 1 ? (
         countriesToShow.map(country => (
-          <p key={country.cca2}>{country.name.common}</p>
+          <div>
+            <p key={country.cca2}>{country.name.common}</p>
+            <button onClick={() => showCountry(country)}> show</button>
+          </div>
         ))
       ) : countriesToShow.length === 1 ? (
         countriesToShow.map(country => (
