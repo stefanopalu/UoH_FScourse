@@ -1,12 +1,16 @@
 const express = require('express')
 const morgan = require('morgan');
 const cors = require('cors')
+const path = require('path');
+
 
 const app = express()
 
 app.use(cors())
 app.use(express.json())
-app.use(express.static('dist'))
+app.use(express.static(path.join(__dirname, 'dist')));
+console.log('Serving static files from:', path.join(__dirname, 'dist'));
+
 
 
 morgan.token('body', (req, res) => {
