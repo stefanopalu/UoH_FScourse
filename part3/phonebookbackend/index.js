@@ -12,7 +12,6 @@ app.use(express.static(path.join(__dirname, 'dist')));
 console.log('Serving static files from:', path.join(__dirname, 'dist'));
 
 
-
 morgan.token('body', (req, res) => {
   if (["POST"].includes(req.method)) {
     return JSON.stringify(req.body)
@@ -80,7 +79,7 @@ app.get('/info', (request, response) => {
         return newId
     } else {
         return generateId()
-    }
+    }to
   }
   
   app.post('/api/persons', (request, response) => {
