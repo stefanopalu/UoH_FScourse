@@ -54,15 +54,6 @@ app.get('/info', (request, response) => {
     response.status(204).end()
   })
 
-  const generateId = () => {
-    const newId = Math.floor(Math.random() * 100000)
-    const ids = persons.map(person => person.id)
-    if (!ids.includes(newId)) {
-        return newId
-    } else {
-        return generateId()
-    }to
-  }
   
   app.post('/api/persons', (request, response) => {
     const body = request.body
@@ -72,23 +63,15 @@ app.get('/info', (request, response) => {
           error: 'name or number missing' 
         })
       }
-    
-    const names = persons.map(person => person.name)
-    if (names.includes(body.name)) {
-        return response.status(400).json({ 
-          error: 'name must be unique' 
-        })
-      }
       
-      const person = {
-        id: generateId(),
-        name: body.name,
-        number: body.number,
-      }
+    const person = new Person({
+      name: body.name,
+      number: body.number,
+    })
   
-    persons = persons.concat(person)
-  
-    response.json(person)
+    person.save().then(savedPerson => {
+      response.json(savedPerson)
+    })
   })
 
 const PORT = process.env.PORT 
