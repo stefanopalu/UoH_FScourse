@@ -31,9 +31,18 @@ const errorHandler = (error, request, response, next) => {
 }
 
 app.get('/api/persons', (request, response) => {
-  Person.find({}).then(notes => {
-    response.json(notes)
+  Person.find({}).then(persons => {
+    response.json(persons)
   })
+})
+
+app.get('/info', (request, response) => {
+  Person.countDocuments().then(count => {
+    response.send(`
+    <p>Phonebook has info for ${count} people</p>
+    <p>${new Date()}</p>
+    `)
+    })
 })
 
 app.get("/api/persons/:id", (request, response, next) => {
