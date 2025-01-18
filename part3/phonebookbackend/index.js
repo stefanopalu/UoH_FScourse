@@ -56,7 +56,6 @@ app.delete("/api/persons/:id", (request, response) => {
   .catch(error => next(error))
 })
 
-  
 app.post('/api/persons', (request, response) => {
   const body = request.body
 
@@ -65,16 +64,41 @@ app.post('/api/persons', (request, response) => {
       error: 'name or number missing' 
     })
   }
-      
-  const person = new Person({
+
+  const person = new Person ({
     name: body.name,
     number: body.number,
   })
   
-  person.save().then(savedPerson => {
+  person.save()
+  .then(savedPerson => {
     response.json(savedPerson)
   })
+  .catch(error => next(error))
 })
+
+app.put('/api/persons/:id', (request, response, next) => {
+  const body = request.body;
+  console.log('Received PUT request with body:', body);
+
+  if (!body.name || !body.number) {
+    console.log('Error: Name or number missing');
+    return response.status(400).json({ 
+      error: 'name or number missing' 
+    });
+  }
+
+  const person = {
+    name: body.name,
+    number: body.number,
+  };
+  
+  Person.findByIdAndUpdate(request.params.id, person, { new: true })
+    .then(updatedPerson => {
+      response.json(updatedPerson)
+    })
+    .catch(error => next(error))
+});
 
 app.use(errorHandler)
 
