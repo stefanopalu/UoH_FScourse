@@ -11,7 +11,6 @@ app.use(express.json())
 app.use(express.static(path.join(__dirname, 'dist')));
 console.log('Serving static files from:', path.join(__dirname, 'dist'));
 
-
 morgan.token('body', (req, res) => {
   if (["POST"].includes(req.method)) {
     return JSON.stringify(req.body)
@@ -21,58 +20,53 @@ morgan.token('body', (req, res) => {
 
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'));
 
-let persons = [
-]
-
 app.get('/api/persons', (request, response) => {
   Person.find({}).then(notes => {
     response.json(notes)
   })
 })
 
-app.get('/info', (request, response) => {
-    response.send(`
-        <p>Phonebook has info for ${persons.length} people</p>
-        <p>${new Date()}</p>
-        `)
-  })
-
-  app.get("/api/persons/:id", (request, response) => {
-    const id = request.params.id
-    const person = persons.find(person => person.id === id)
-    
-    if (person) {
+app.get("/api/persons/:id", (request, response) => {
+  Person.findById(request.params.id)
+    .then(person => {
+      if (person) {
         response.json(person)
-    } else {
+      } else {
         response.status(404).end()
-    }
-  })
+      }
+    })
+    .catch(error => {
+      console.log(error)
+      response.status(500).end()
+    })
+})
 
-  app.delete("/api/persons/:id", (request, response) => {
-    const id = request.params.id
-    persons = persons.filter(person => person.id !== id)
+app.delete("/api/persons/:id", (request, response) => {
+  Person.findByIdAndDelete(request.params.id)
+  .then(result => {
     response.status(204).end()
   })
+})
 
   
-  app.post('/api/persons', (request, response) => {
-    const body = request.body
+app.post('/api/persons', (request, response) => {
+  const body = request.body
 
-    if (!body.name || !body.number) {
-        return response.status(400).json({ 
-          error: 'name or number missing' 
-        })
-      }
+  if (!body.name || !body.number) {
+    return response.status(400).json({ 
+      error: 'name or number missing' 
+    })
+  }
       
-    const person = new Person({
-      name: body.name,
-      number: body.number,
-    })
-  
-    person.save().then(savedPerson => {
-      response.json(savedPerson)
-    })
+  const person = new Person({
+    name: body.name,
+    number: body.number,
   })
+  
+  person.save().then(savedPerson => {
+    response.json(savedPerson)
+  })
+})
 
 const PORT = process.env.PORT 
 app.listen(PORT, () => {
