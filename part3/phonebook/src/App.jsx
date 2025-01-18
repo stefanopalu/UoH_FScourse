@@ -41,21 +41,28 @@ const App = () => {
       setNewName("")
       setNewNumber("")
     }
-    } else {
-      personService
-        .create(newPerson)
-        .then(response => {
-          setPersons(persons.concat(response.data))
-          setNotificationMessage(`Added ${newPerson.name}`)
-          setTimeout(() => {
-            setNotificationMessage(null)
-          }, 5000)
-          setNewName("")
-          setNewNumber("")
-          console.log("added")
-        })
-    }
+  } else {
+    personService
+      .create(newPerson)
+      .then(response => {
+        setPersons(persons.concat(response.data))
+        setNotificationMessage(`Added ${newPerson.name}`)
+        setTimeout(() => {
+          setNotificationMessage(null)
+        }, 5000)
+        setNewName("")
+        setNewNumber("")
+        console.log("added")
+      })
+      .catch(error => {
+        console.log(error.response.data.error)
+        setErrorMessage(error.response.data.error)
+        setTimeout(() => {
+          setErrorMessage(null);
+        }, 5000);
+      })
   }
+}
 
   const deletePersonFrom = (id, person) => {
     if (window.confirm(`Delete ${person.name} ?`)) {
