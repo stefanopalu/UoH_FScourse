@@ -22,14 +22,14 @@ test('blogs are returned as json', async () => {
     .expect('Content-Type', /application\/json/)
 })
 
-test.only('blogs unique identifier', async () => {
+test('blogs unique identifier', async () => {
   const blogs = await helper.blogsInDb()
     blogs.forEach (blog =>
         assert.ok(blog.id)
     )
   })
 
-test.only('a blog can be added ', async () => {
+test('a blog can be added ', async () => {
   const newBlog = {
     title: 'newtitle',
     author: 'newauthor',
@@ -94,7 +94,7 @@ test('missing url', async () => {
   
   })
 
-test.only('a blog can be deleted', async () => {
+test('a blog can be deleted', async () => {
   const blogsAtStart = await helper.blogsInDb()
   const blogToDelete = blogsAtStart[0]
 
@@ -106,6 +106,32 @@ test.only('a blog can be deleted', async () => {
 
   assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length - 1)
 })
+
+test.only('a blog can be modified', async () => {
+  const blogsAtStart = await helper.blogsInDb()
+  const blogToModify = blogsAtStart[0]
+
+    const newBlog = {
+      title: 'newtitle',
+      author: 'newauthor',
+      url: 'newurl',
+      likes: blogToModify.likes+1,
+    }
+    
+    await api
+      .put(`/api/blogs/${blogToModify.id}`)
+      .send(newBlog)
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
+  
+      const updatedBlog = await helper.blogsInDb()
+        .then(blogs => blogs.find(blog => blog.id === blogToModify.id));
+
+    assert.strictEqual(updatedBlog.title, 'newtitle');
+    assert.strictEqual(updatedBlog.author, 'newauthor');
+    assert.strictEqual(updatedBlog.url, 'newurl');
+    assert.strictEqual(updatedBlog.likes, blogToModify.likes + 1);
+  })
 
 after(async () => {
   await mongoose.connection.close()
