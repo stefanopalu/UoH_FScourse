@@ -85,6 +85,34 @@ test.only('missing likes to zero', async () => {
   assert.strictEqual(response.body.likes, 0)
 })
 
+test.only('missing title', async () => {
+    const newBlog = {
+      author: 'author',
+      url: 'url',
+    }
+  
+    const response = await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+  
+  })
+
+test.only('missing url', async () => {
+    const newBlog = {
+      title: 'title',
+      author: 'author',
+    }
+  
+    const response = await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+  
+  })
+
 after(async () => {
   await mongoose.connection.close()
 })
