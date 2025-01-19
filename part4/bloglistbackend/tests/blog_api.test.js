@@ -48,10 +48,10 @@ test.only('blogs unique identifier', async () => {
 
 test.only('a blog can be added ', async () => {
   const newBlog = {
-    title: 'title',
-    author: 'author',
-    url: 'url',
-    likes: 0,
+    title: 'newtitle',
+    author: 'newauthor',
+    url: 'newurl',
+    likes: 6,
   }
   
   await api
@@ -66,7 +66,23 @@ test.only('a blog can be added ', async () => {
 
   assert.strictEqual(response.body.length, initialBlogs.length + 1)
 
-  assert(titles.includes('title'))
+  assert(titles.includes('newtitle'))
+})
+
+test.only('missing likes to zero', async () => {
+  const newBlog = {
+    title: 'title',
+    author: 'author',
+    url: 'url',
+  }
+
+  const response = await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+  assert.strictEqual(response.body.likes, 0)
 })
 
 after(async () => {
