@@ -107,7 +107,7 @@ test('a blog can be deleted', async () => {
   assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length - 1)
 })
 
-test.only('a blog can be modified', async () => {
+test('a blog can be modified', async () => {
   const blogsAtStart = await helper.blogsInDb()
   const blogToModify = blogsAtStart[0]
 
@@ -132,6 +132,7 @@ test.only('a blog can be modified', async () => {
     assert.strictEqual(updatedBlog.url, 'newurl');
     assert.strictEqual(updatedBlog.likes, blogToModify.likes + 1);
   })
+
 
 after(async () => {
   await mongoose.connection.close()
