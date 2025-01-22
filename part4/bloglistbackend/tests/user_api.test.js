@@ -63,7 +63,7 @@ const User = require('../models/user')
     assert.ok(response.body.error.includes('is shorter than'))
   })
 
-test('creation fail with a username not unique', async () => {
+test.only('creation fail with a username not unique', async () => {
   const usersAtStart = await helper.usersInDb()
 
   const newUser = {
