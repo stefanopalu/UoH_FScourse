@@ -2,16 +2,27 @@ const { test, after, beforeEach } = require('node:test')
 const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
+const bcrypt = require('bcrypt');
+
 const assert = require('node:assert')
 
 const api = supertest(app)
 
 const helper = require('./test_helper')
 
-const Blog = require('../models/blog');
+const Blog = require('../models/blog')
+const User = require('../models/user')
+
+
 
 beforeEach(async () => {
   await Blog.deleteMany({})
+  await User.deleteMany({})
+
+  const passwordHash = await bcrypt.hash('sekret', 10)
+  const user = new User({ username: 'root', passwordHash })
+
+  await user.save()
   await Blog.insertMany(helper.initialBlogs)
 })
 
@@ -29,27 +40,38 @@ test('blogs unique identifier', async () => {
     )
   })
 
-test('a blog can be added ', async () => {
-  const newBlog = {
-    title: 'newtitle',
-    author: 'newauthor',
-    url: 'newurl',
-    likes: 6,
-  }
+  test('a blog can be added', async () => {
+    const loginResponse = await api
+      .post('/api/login')
+      .send({ username: 'root', password: 'sekret' })
+      .expect(200); 
+
+    const token = loginResponse.body.token; 
+    if (!token) {
+      console.error('Token missing in login response');
+      throw new Error('Token not found'); 
+    }
   
-  await api
-    .post('/api/blogs')
-    .send(newBlog)
-    .expect(201)
-    .expect('Content-Type', /application\/json/)
-
-  const blogsAtEnd = await helper.blogsInDb()
-  const titles = blogsAtEnd.map(r => r.title)
-
-  assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length + 1)
-
-  assert(titles.includes('newtitle'))
-})
+    const newBlog = {
+      title: 'newtitle',
+      author: 'newauthor',
+      url: 'newurl',
+      likes: 6,
+    }
+    
+    const blogResponse = await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .set('Authorization', `Bearer ${token}`) 
+      .expect(201) 
+      .expect('Content-Type', /application\/json/)
+  
+    const blogsAtEnd = await helper.blogsInDb()
+    const titles = blogsAtEnd.map(r => r.title)
+  
+    assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length + 1)
+    assert(titles.includes('newtitle'))
+  });
 
 test('missing likes to zero', async () => {
   const newBlog = {
@@ -132,7 +154,6 @@ test('a blog can be modified', async () => {
     assert.strictEqual(updatedBlog.url, 'newurl');
     assert.strictEqual(updatedBlog.likes, blogToModify.likes + 1);
   })
-
 
 after(async () => {
   await mongoose.connection.close()
