@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import LoginForm from './components/LoginForm'
 import NewBlogForm from './components/NewBlogForm'
+import { Notification } from './components/Notification'
+import { ErrorMessage } from './components/errormessage'
 
 import blogService from './services/blogs'
 import loginService from './services/login'
@@ -15,6 +17,8 @@ const App = () => {
   const [title, setTitle] = useState('') 
   const [author, setAuthor] = useState('') 
   const [blogUrl, setBlogUrl] = useState('') 
+  const [notificationMessage, setNotificationMessage] = useState(null)
+  const [errorMessage, setErrorMessage] = useState(null)
  
 
   useEffect(() => {
@@ -35,18 +39,25 @@ const App = () => {
   const handleLogin = async (event) => {
     event.preventDefault()
 
-    const user = await loginService.login ({
-        username, password
-    })
+    try {
+      const user = await loginService.login ({
+          username, password
+      })
 
-    window.localStorage.setItem(
-      'loggedNoteappUser', JSON.stringify(user)
-    ) 
-
-    blogService.setToken(user.token)
-    setUser(user)
-    setUsername('')
-    setPassword('')
+      window.localStorage.setItem(
+        'loggedNoteappUser', JSON.stringify(user)
+      ) 
+  
+      blogService.setToken(user.token)
+      setUser(user)
+      setUsername('')
+      setPassword('')
+    } catch(error) {
+      setErrorMessage('wrong username or password')
+        setTimeout(() => {
+          setErrorMessage(null);
+        }, 5000);
+    }
   }
 
   const createBlog = (event) => {
@@ -62,32 +73,24 @@ const App = () => {
     .create(blogObject)
     .then(returnedBlog => {
       setBlogs(blogsBefore => [...blogsBefore, returnedBlog])
+      setNotificationMessage(`a new blog ${returnedBlog.title} by ${returnedBlog.author} added` )
+        setTimeout(() => {
+          setNotificationMessage(null)
+        }, 5000)
+
       setTitle('')
       setAuthor('')
       setBlogUrl('')
     })
   }
 
-  const addNote = (event) => {
-      event.preventDefault()
-      const noteObject = {
-        content: newNote,
-        important: Math.random() <0.5,
-      }
-  
-      noteService
-        .create(noteObject)
-        .then(returnedNote => {
-          setNotes(notes.concat(returnedNote))
-          setNewNote('')
-        })
-    }
-
   return (
     <div>
       {user === null ? (
       <div>
         <h2>Log in to application</h2>
+        <ErrorMessage message={errorMessage} />
+
         <LoginForm
           username={username}
           password={password}
@@ -99,6 +102,7 @@ const App = () => {
       ) : (
       <div>
         <h2>blogs</h2>
+        <Notification message={notificationMessage} />
         {user.name} logged in
         <button onClick={() => {
           setUser(null)
