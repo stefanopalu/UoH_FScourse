@@ -101,7 +101,7 @@ const App = () => {
           }}>
           logout
         </button>
-        <Togglable buttonLabel='new note' ref={blogFormRef}>
+        <Togglable showButtonLabel='new note' hideButtonLabel='cancel'ref={blogFormRef}>
         <h2>create new</h2>
         <NewBlogForm
           title={title}
