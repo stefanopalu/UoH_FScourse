@@ -1,7 +1,7 @@
 import Togglable from "./Togglable"
 import blogService from '../services/blogs'
 
-const Blog = ({ blog, setBlogs }) => {
+const Blog = ({ blog, setBlogs, deleteBlog, user}) => {
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -9,6 +9,9 @@ const Blog = ({ blog, setBlogs }) => {
     borderWidth: 1,
     marginBottom: 5
   }
+
+  console.log("User ID:", user.id)
+  console.log("Blog User ID:", blog.user.id)
 
   const addLike = async () => {
     const updatedBlog = {...blog, likes: blog.likes +1}
@@ -35,7 +38,9 @@ const Blog = ({ blog, setBlogs }) => {
             {blog.user.name}
           </div>
         </Togglable>
-      
+        {user.id === blog.user.id && ( 
+      <button onClick={() => deleteBlog(blog)}>Remove</button>
+    )}
     </div>
 )}
   

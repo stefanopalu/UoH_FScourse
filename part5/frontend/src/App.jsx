@@ -8,7 +8,6 @@ import Togglable from './components/Togglable'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
-
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('') 
@@ -52,6 +51,7 @@ const App = () => {
       setUser(user)
       setUsername('')
       setPassword('')
+      console.log("User object after login:", user)
     } catch(error) {
       setErrorMessage('wrong username or password')
         setTimeout(() => {
@@ -71,6 +71,16 @@ const App = () => {
           setNotificationMessage(null)
         }, 5000)
     })
+  }
+
+  const deleteBlog = (blogObject) => {
+    if (window.confirm(`Remove blog ${blogObject.title} by ${blogObject.author}`)) {
+      blogService
+      .remove(blogObject.id)
+      .then(() => {
+        setBlogs(blogs.filter(blog => blogObject.id !== blog.id))
+      })
+    }
   }
 
   const sortedBlogs = blogs.sort((a, b) => b.likes - a.likes)
@@ -116,7 +126,7 @@ const App = () => {
         /> 
         </Togglable>
         {sortedBlogs.map(blog =>
-          <Blog key={blog.id} blog={blog} setBlogs={setBlogs} />
+          <Blog key={blog.id} blog={blog} setBlogs={setBlogs} deleteBlog={deleteBlog} user={user}/>
         )}
       </div>
       )}
