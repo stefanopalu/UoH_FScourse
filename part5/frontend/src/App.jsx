@@ -4,7 +4,7 @@ import LoginForm from './components/LoginForm'
 import NewBlogForm from './components/NewBlogForm'
 import { Notification } from './components/Notification'
 import { ErrorMessage } from './components/errormessage'
-
+import Togglable from './components/Togglable'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
@@ -110,6 +110,7 @@ const App = () => {
           }}>
           logout
         </button>
+        <Togglable buttonLabel='new note'>
         <h2>create new</h2>
         <NewBlogForm
           title={title}
@@ -120,6 +121,7 @@ const App = () => {
           setAuthor={setAuthor}
           setBlogUrl={setBlogUrl}
         /> 
+        </Togglable>
         {blogs.map(blog =>
           <Blog key={blog.id} blog={blog} />
         )}
