@@ -14,9 +14,9 @@ const App = () => {
   const [username, setUsername] = useState('') 
   const [password, setPassword] = useState('') 
   const [user, setUser] = useState(null)
-  const [title, setTitle] = useState('') 
-  const [author, setAuthor] = useState('') 
-  const [blogUrl, setBlogUrl] = useState('') 
+  const [title, setTitle] = useState('')
+  const [author, setAuthor] = useState('')
+  const [blogUrl, setBlogUrl] = useState('')
   const [notificationMessage, setNotificationMessage] = useState(null)
   const [errorMessage, setErrorMessage] = useState(null)
  
@@ -60,15 +60,7 @@ const App = () => {
     }
   }
 
-  const createBlog = (event) => {
-    event.preventDefault()
-
-    const blogObject = {
-      title: title,
-      author: author,
-      url: blogUrl
-    }
-
+  const createBlog = (blogObject) => {
     blogService
     .create(blogObject)
     .then(returnedBlog => {
@@ -77,10 +69,6 @@ const App = () => {
         setTimeout(() => {
           setNotificationMessage(null)
         }, 5000)
-
-      setTitle('')
-      setAuthor('')
-      setBlogUrl('')
     })
   }
 
