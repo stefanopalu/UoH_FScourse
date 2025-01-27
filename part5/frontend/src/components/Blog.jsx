@@ -1,6 +1,7 @@
 import Togglable from "./Togglable"
+import blogService from '../services/blogs'
 
-const Blog = ({ blog }) => {
+const Blog = ({ blog, setBlogs }) => {
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -8,6 +9,14 @@ const Blog = ({ blog }) => {
     borderWidth: 1,
     marginBottom: 5
   }
+
+  const addLike = async () => {
+    const updatedBlog = {...blog, likes: blog.likes +1}
+    const returnedBlog = await blogService.update(blog.id, updatedBlog)
+    setBlogs(blogsBefore =>
+      blogsBefore.map(blog => blog.id === returnedBlog.id ? returnedBlog : blog)
+    )
+  } 
 
   return (
     <div style={blogStyle}>
@@ -19,7 +28,7 @@ const Blog = ({ blog }) => {
             {blog.url}
           </div>
           <div>
-            {blog.likes}
+            {blog.likes} <button onClick={addLike}>like</button>
           </div>
           <div>
             {blog.user.name}
