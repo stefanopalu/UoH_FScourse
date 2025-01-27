@@ -13,6 +13,7 @@ const Blog = ({ blog, setBlogs }) => {
   const addLike = async () => {
     const updatedBlog = {...blog, likes: blog.likes +1}
     const returnedBlog = await blogService.update(blog.id, updatedBlog)
+    console.log('Returned Blog:', returnedBlog)
     setBlogs(blogsBefore =>
       blogsBefore.map(blog => blog.id === returnedBlog.id ? returnedBlog : blog)
     )
