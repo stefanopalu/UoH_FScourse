@@ -11,20 +11,17 @@ const Blog = ({ blog, setBlogs, deleteBlog, user}) => {
     marginBottom: 5
   }
 
-  console.log("User ID:", user.id)
-  console.log("Blog User ID:", blog.user.id)
-
   const addLike = async () => {
     const updatedBlog = {...blog, likes: blog.likes +1}
     const returnedBlog = await blogService.update(blog.id, updatedBlog)
-    console.log('Returned Blog:', returnedBlog)
+
     setBlogs(blogsBefore =>
       blogsBefore.map(blog => blog.id === returnedBlog.id ? returnedBlog : blog)
     )
   } 
 
   return (
-    <div style={blogStyle}>
+    <div style={blogStyle} className="blog">
       <div>
         {blog.title} {blog.author}
       </div>
