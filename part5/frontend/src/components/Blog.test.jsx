@@ -23,6 +23,7 @@ describe('<Blog />', () => {
           user={{ id: '123' }}
           setBlogs={() => {}} 
           deleteBlog={() => {}}
+          addLike={mockHandler}
         />
       ).container
     })
