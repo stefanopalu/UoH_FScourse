@@ -59,7 +59,7 @@ describe('Blog app', () => {
   describe('When a blog exists', () => {
     beforeEach(async ({ page }) => {
       await loginWith(page, 'username', 'password')
-      await createBlog(page, 'test title', 'test author', 'test url')
+      await createBlog(page, 'test title one', 'test author one', 'test url one')
     })
 
     test('a blog can be liked', async ({ page }) => {
@@ -67,6 +67,17 @@ describe('Blog app', () => {
 
         await blogDiv.getByRole('button', { name: 'view' }).click()
         await blogDiv.getByRole('button', { name: 'like' }).click()
+    })
+
+    test('a blog can be removed', async ({ page }) => {
+      const blogDiv = await page.locator('.blog')
+
+      await blogDiv.getByRole('button', { name: 'view' }).click()
+      await blogDiv.getByRole('button', { name: 'remove' }).click()
+
+      await page.waitForTimeout(1000);
+
+      await expect(blogDiv).not.toBeVisible()
     })
   })
 })
