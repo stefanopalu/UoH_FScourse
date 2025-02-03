@@ -28,13 +28,14 @@ const Anecdotes = () => {
 
   return(
     <div>
-      {anecdotes
+      {[...anecdotes]
         .sort((a, b) => b.votes - a.votes)
         .map(anecdote =>
           <Anecdote
             key = {anecdote.id}
             anecdote={anecdote}
-            handleClick={() => dispatch(addVote(anecdote.id))}
+            
+            handleClick={() => dispatch(addVote({ id: anecdote.id }))}
           />
       )}
     </div>
