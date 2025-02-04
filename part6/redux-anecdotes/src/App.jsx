@@ -7,14 +7,14 @@ import Filter from './components/Filter'
 import Notification from './components/Notification'
 import anecdoteService from './services/anecdotes'
 import anecdotes from './services/anecdotes'
+import { initializeAnecdotes } from './reducers/anecdoteReducer'
 
 const App = () => {
   const notification = useSelector(state => state.notification)
   const dispatch = useDispatch()
   useEffect(() => {
-    anecdoteService
-    .getAll().then(anecdotes => dispatch(setAnecdotes(anecdotes)))
-  })
+    dispatch(initializeAnecdotes())
+  }, [])
 
   const vote = (id) => {
     dispatch(addVote(id))
