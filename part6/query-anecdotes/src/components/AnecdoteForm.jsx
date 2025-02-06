@@ -13,6 +13,16 @@ const AnecdoteForm = () => {
     onSuccess: (newAnecdote) => {
       const anecdotes = queryClient.getQueryData(['anecdotes'])
       queryClient.setQueryData(['anecdotes'], anecdotes.concat(newAnecdote))
+      dispatch({type: "NEW", anecdote: newAnecdote}) 
+      setTimeout(() => {
+        dispatch({type:"CLEAR"})
+      }, 5000)
+    },
+    onError: (error) => {
+      dispatch({type: "SHORT"})
+      setTimeout(() => {
+        dispatch({type:"CLEAR"})
+      }, 5000)
     }
   })
 
@@ -20,14 +30,9 @@ const AnecdoteForm = () => {
     event.preventDefault()
     const content = event.target.anecdote.value
     event.target.anecdote.value = ''
-    if (content.length >= 5) {
-      newAnecdoteMutation.mutate( {content, votes: 0})
-      dispatch({type: "NEW", anecdote: {content}})
-      setTimeout(() => {
-        dispatch({type:"CLEAR"})
-      }, 5000)
-    }
-}
+    newAnecdoteMutation.mutate( {content, votes: 0})
+      
+  }
 
   return (
     <div>

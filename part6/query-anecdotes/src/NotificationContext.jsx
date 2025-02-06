@@ -13,6 +13,8 @@ const initialState = {
         return {message: `anecdote ${action.anecdote.content} voted`, anecdote: action.anecdote}
       case "CLEAR":
         return {message: '', anecdote: null}
+      case "SHORT":
+        return {message: 'too short anecdote, must have a length of 5 or more', anecdote: null}
       default: 
         return initialState
     }
