@@ -37,6 +37,11 @@
     {
       "content": "brand new anecdote",
       "id": "U9SEseR"
+    },
+    {
+      "content": "new with votes",
+      "votes": 0,
+      "id": "h6LhOCs"
     }
   ]
 }
