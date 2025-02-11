@@ -1,0 +1,8 @@
+{
+  "devDependencies": {
+    "prettier": "^3.5.0"
+  },
+  "scripts": {
+  "format": "prettier --write 'frontend/**/*.{js,jsx,ts,tsx,css,html}' 'backend/**/*.{js,jsx,ts,tsx,css,html}'"
+}
+}
