@@ -8,10 +8,10 @@ import { ErrorMessage } from "./components/errormessage";
 import { setNotification } from "./reducers/notificationReducer";
 import Togglable from "./components/Togglable";
 import blogService from "./services/blogs";
+import { initialiseBlogs, createBlog } from "./reducers/blogsReducer";
 import loginService from "./services/login";
 
 const App = () => {
-  const [blogs, setBlogs] = useState([]);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [user, setUser] = useState(null);
@@ -23,8 +23,10 @@ const App = () => {
   const dispatch = useDispatch()
 
   useEffect(() => {
-    blogService.getAll().then((blogs) => setBlogs(blogs));
-  }, []);
+    dispatch(initialiseBlogs());
+  }, [dispatch]);
+
+  const blogs = useSelector((state) => state.blogs);
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem("loggedNoteappUser");
@@ -59,15 +61,11 @@ const App = () => {
     }
   };
 
-  const createBlog = (blogObject) => {
+  const handleCreateBlog = (blogObject) => {
     blogFormRef.current.toggleVisibility();
-    blogService.create(blogObject).then((returnedBlog) => {
-      setBlogs((blogsBefore) => [...blogsBefore, returnedBlog]);
-      dispatch(setNotification(
-        `a new blog ${returnedBlog.title} by ${returnedBlog.author} added`,
-        5 
-      ));
-    });
+    dispatch(createBlog(blogObject))
+    console.log("blog added")
+    dispatch(setNotification(`a new blog ${blogObject.title} by ${blogObject.author} added`,5 ))
   };
 
   const deleteBlog = (blogObject) => {
@@ -80,7 +78,7 @@ const App = () => {
     }
   };
 
-  const sortedBlogs = blogs.sort((a, b) => b.likes - a.likes);
+  const sortedBlogs = [...blogs].sort((a, b) => b.likes - a.likes);
 
   const blogFormRef = useRef();
 
@@ -113,7 +111,7 @@ const App = () => {
             logout
           </button>
           <Togglable
-            showButtonLabel="new note"
+            showButtonLabel="new blog"
             hideButtonLabel="cancel"
             ref={blogFormRef}
           >
@@ -122,7 +120,7 @@ const App = () => {
               title={title}
               author={author}
               blogUrl={blogUrl}
-              createBlog={createBlog}
+              createBlog={handleCreateBlog}
               setTitle={setTitle}
               setAuthor={setAuthor}
               setBlogUrl={setBlogUrl}
@@ -132,7 +130,6 @@ const App = () => {
             <Blog
               key={blog.id}
               blog={blog}
-              setBlogs={setBlogs}
               deleteBlog={deleteBlog}
               user={user}
             />

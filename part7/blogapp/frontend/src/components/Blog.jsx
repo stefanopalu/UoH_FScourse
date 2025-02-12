@@ -53,7 +53,6 @@ Blog.propTypes = {
       name: PropTypes.string.isRequired,
     }).isRequired,
   }).isRequired,
-  setBlogs: PropTypes.func.isRequired,
   deleteBlog: PropTypes.func.isRequired,
   user: PropTypes.shape({
     id: PropTypes.string.isRequired,
