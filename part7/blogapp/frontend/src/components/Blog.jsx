@@ -1,8 +1,12 @@
 import Togglable from "./Togglable";
 import PropTypes from "prop-types";
-import blogService from "../services/blogs";
+import { useDispatch } from 'react-redux'
+import { voteBlog } from "../reducers/blogsReducer";
+
 
 const Blog = ({ blog, setBlogs, deleteBlog, user }) => {
+  const dispatch = useDispatch()
+
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -11,15 +15,8 @@ const Blog = ({ blog, setBlogs, deleteBlog, user }) => {
     marginBottom: 5,
   };
 
-  const addLike = async () => {
-    const updatedBlog = { ...blog, likes: blog.likes + 1 };
-    const returnedBlog = await blogService.update(blog.id, updatedBlog);
-
-    setBlogs((blogsBefore) =>
-      blogsBefore.map((blog) =>
-        blog.id === returnedBlog.id ? returnedBlog : blog,
-      ),
-    );
+  const addLike = (blog) => {
+    dispatch(voteBlog(blog))
   };
 
   return (
@@ -30,7 +27,7 @@ const Blog = ({ blog, setBlogs, deleteBlog, user }) => {
       <Togglable showButtonLabel="view" hideButtonLabel="hide">
         <div>{blog.url}</div>
         <div>
-          {blog.likes} <button onClick={addLike}>like</button>
+          {blog.likes} <button onClick={() => addLike(blog)}>like</button>
         </div>
         <div>{blog.user.name}</div>
       </Togglable>

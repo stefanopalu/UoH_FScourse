@@ -8,7 +8,7 @@ import { ErrorMessage } from "./components/errormessage";
 import { setNotification } from "./reducers/notificationReducer";
 import Togglable from "./components/Togglable";
 import blogService from "./services/blogs";
-import { initialiseBlogs, createBlog } from "./reducers/blogsReducer";
+import { initialiseBlogs, createBlog, deleteBlog } from "./reducers/blogsReducer";
 import loginService from "./services/login";
 
 const App = () => {
@@ -68,13 +68,12 @@ const App = () => {
     dispatch(setNotification(`a new blog ${blogObject.title} by ${blogObject.author} added`,5 ))
   };
 
-  const deleteBlog = (blogObject) => {
+  const handleDeleteBlog = (blogObject) => {
+    console.log(blogObject)
     if (
       window.confirm(`Remove blog ${blogObject.title} by ${blogObject.author}`)
     ) {
-      blogService.remove(blogObject.id).then(() => {
-        setBlogs(blogs.filter((blog) => blogObject.id !== blog.id));
-      });
+      dispatch(deleteBlog(blogObject.id))
     }
   };
 
@@ -130,7 +129,7 @@ const App = () => {
             <Blog
               key={blog.id}
               blog={blog}
-              deleteBlog={deleteBlog}
+              deleteBlog={() => {handleDeleteBlog(blog)}}
               user={user}
             />
           ))}
