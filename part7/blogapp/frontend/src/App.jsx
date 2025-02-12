@@ -10,16 +10,17 @@ import Togglable from "./components/Togglable";
 import blogService from "./services/blogs";
 import { initialiseBlogs, createBlog, deleteBlog } from "./reducers/blogsReducer";
 import loginService from "./services/login";
+import { storeUser } from "./reducers/userReducer";
 
 const App = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [user, setUser] = useState(null);
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
   const [blogUrl, setBlogUrl] = useState("");
   const [errorMessage, setErrorMessage] = useState(null);
   const notification = useSelector(state => state.notification)
+  const user = useSelector(state => state.user)
   const dispatch = useDispatch()
 
   useEffect(() => {
@@ -32,7 +33,7 @@ const App = () => {
     const loggedUserJSON = window.localStorage.getItem("loggedNoteappUser");
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON);
-      setUser(user);
+      dispatch(storeUser(user));
       blogService.setToken(user.token);
     }
   }, []);
@@ -49,10 +50,9 @@ const App = () => {
       window.localStorage.setItem("loggedNoteappUser", JSON.stringify(user));
 
       blogService.setToken(user.token);
-      setUser(user);
+      dispatch(storeUser(user));
       setUsername("");
       setPassword("");
-      console.log("User object after login:", user);
     } catch (error) {
       setErrorMessage("wrong username or password");
       setTimeout(() => {
@@ -103,7 +103,7 @@ const App = () => {
           {user.name} logged in
           <button
             onClick={() => {
-              setUser(null);
+              dispatch(storeUser(null));
               window.localStorage.removeItem("loggedNoteappUser");
             }}
           >
