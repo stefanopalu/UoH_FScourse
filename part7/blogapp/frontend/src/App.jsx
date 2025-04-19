@@ -6,12 +6,15 @@ import { useState, useEffect, useRef } from "react";
 import { useSelector, useDispatch } from 'react-redux'
 import BlogList from "./components/BlogList"
 import Users from "./components/Users"
+import User from "./components/User"
 import LoginForm from "./components/LoginForm";
 import { Notification } from "./components/Notification";
 import { ErrorMessage } from "./components/errormessage";
 import { setNotification } from "./reducers/notificationReducer";
 import blogService from "./services/blogs";
 import { initialiseBlogs, createBlog, deleteBlog } from "./reducers/blogsReducer";
+import { initialiseUsers } from './reducers/usersReducer'
+
 import loginService from "./services/login";
 import { storeUser } from "./reducers/userReducer"
 
@@ -29,6 +32,12 @@ const App = () => {
   useEffect(() => {
     dispatch(initialiseBlogs());
   }, [dispatch]);
+
+  const users = useSelector(state => state.users)
+
+useEffect(() => {
+  dispatch(initialiseUsers());
+}, [dispatch]);
 
   const blogs = useSelector((state) => state.blogs);
 
@@ -114,7 +123,8 @@ const App = () => {
             logout
           </button>
           <Routes>
-            <Route path="/users" element={<Users />} />
+            <Route path="/users" element={<Users users={users}/>} />
+            <Route path="/users/:id" element={<User users={users}/>} />
             <Route path="/" element={
                 <BlogList
                   title={title}
