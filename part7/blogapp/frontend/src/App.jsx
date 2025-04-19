@@ -1,16 +1,19 @@
+import {
+  BrowserRouter as Router,
+  Routes, Route, Link
+} from 'react-router-dom'
 import { useState, useEffect, useRef } from "react";
 import { useSelector, useDispatch } from 'react-redux'
-import Blog from "./components/Blog";
+import BlogList from "./components/BlogList"
+import Users from "./components/Users"
 import LoginForm from "./components/LoginForm";
-import NewBlogForm from "./components/NewBlogForm";
 import { Notification } from "./components/Notification";
 import { ErrorMessage } from "./components/errormessage";
 import { setNotification } from "./reducers/notificationReducer";
-import Togglable from "./components/Togglable";
 import blogService from "./services/blogs";
 import { initialiseBlogs, createBlog, deleteBlog } from "./reducers/blogsReducer";
 import loginService from "./services/login";
-import { storeUser } from "./reducers/userReducer";
+import { storeUser } from "./reducers/userReducer"
 
 const App = () => {
   const [username, setUsername] = useState("");
@@ -82,6 +85,7 @@ const App = () => {
   const blogFormRef = useRef();
 
   return (
+    <Router>
     <div>
       {user === null ? (
         <div>
@@ -109,33 +113,28 @@ const App = () => {
           >
             logout
           </button>
-          <Togglable
-            showButtonLabel="new blog"
-            hideButtonLabel="cancel"
-            ref={blogFormRef}
-          >
-            <h2>create new</h2>
-            <NewBlogForm
-              title={title}
-              author={author}
-              blogUrl={blogUrl}
-              createBlog={handleCreateBlog}
-              setTitle={setTitle}
-              setAuthor={setAuthor}
-              setBlogUrl={setBlogUrl}
-            />
-          </Togglable>
-          {sortedBlogs.map((blog) => (
-            <Blog
-              key={blog.id}
-              blog={blog}
-              deleteBlog={() => {handleDeleteBlog(blog)}}
-              user={user}
-            />
-          ))}
+          <Routes>
+            <Route path="/users" element={<Users />} />
+            <Route path="/" element={
+                <BlogList
+                  title={title}
+                  author={author}
+                  blogUrl={blogUrl}
+                  setTitle={setTitle}
+                  setAuthor={setAuthor}
+                  setBlogUrl={setBlogUrl}
+                  createBlog={handleCreateBlog}
+                  deleteBlog={handleDeleteBlog}
+                  sortedBlogs={sortedBlogs}
+                  user={user}
+                  blogFormRef={blogFormRef}
+                />
+              }/>
+            </Routes>
         </div>
       )}
     </div>
+    </Router>
   );
 };
 
