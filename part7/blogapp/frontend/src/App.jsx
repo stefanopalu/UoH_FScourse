@@ -94,6 +94,10 @@ useEffect(() => {
 
   const blogFormRef = useRef();
 
+  const padding = {
+    padding: 5
+  }
+
   return (
     <Router>
     <div>
@@ -112,17 +116,22 @@ useEffect(() => {
         </div>
       ) : (
         <div>
-          <h2>blogs</h2>
+          <div>
+            <Link style={padding} to="/">blogs</Link>
+            <Link style={padding} to="/users">users</Link>
+            <span style={padding}>
+              {user.name} logged in
+              <button
+                onClick={() => {
+                  dispatch(storeUser(null));
+                  window.localStorage.removeItem("loggedNoteappUser");
+                }}>
+                logout
+              </button>
+            </span>
+          </div>
           <Notification message={notification} />
-          {user.name} logged in
-          <button
-            onClick={() => {
-              dispatch(storeUser(null));
-              window.localStorage.removeItem("loggedNoteappUser");
-            }}
-          >
-            logout
-          </button>
+          <h2>blog app</h2>
           <Routes>
             <Route path="/users" element={<Users users={users}/>} />
             <Route path="/users/:id" element={<User users={users}/>} />
