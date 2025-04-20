@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useContext } from 'react'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import Blog from './components/Blog'
 import LoginForm from './components/LoginForm'
 import NewBlogForm from './components/NewBlogForm'
@@ -10,22 +11,49 @@ import loginService from './services/login'
 import NotificationContext from './NotificationContext'
 
 const App = () => {
-  const [blogs, setBlogs] = useState([])
-  const [username, setUsername] = useState('') 
-  const [password, setPassword] = useState('') 
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [blogUrl, setBlogUrl] = useState('')
   const [errorMessage, setErrorMessage] = useState(null)
- 
-  const [notification, notificationDispatch] = useContext(NotificationContext)
 
-  useEffect(() => {
-    blogService.getAll().then(blogs =>
-      setBlogs( blogs )
-    )  
-  }, [])
+  const [notification, notificationDispatch] = useContext(NotificationContext)
+  const queryClient = useQueryClient()
+
+  const newBlogMutation = useMutation({
+    mutationFn: blogService.create,
+    onSuccess: (returnedBlog) => {
+      queryClient.invalidateQueries({ queryKey: ['blogs'] })
+      notificationDispatch({
+        type: 'NEW',
+        blog: returnedBlog
+      })
+      setTimeout(() => {
+        notificationDispatch({ type: 'CLEAR' })
+      }, 5000)
+    }
+  })
+
+  const deleteBlogMutation = useMutation({
+    mutationFn: (id) => blogService.remove(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['blogs'] })
+    }
+  })
+
+  const voteBlogMutation = useMutation({
+    mutationFn: ({ id, blogObject }) => blogService.update(id, blogObject),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['blogs'] })
+    }
+  })
+
+  const result = useQuery({
+    queryKey: ['blogs'],
+    queryFn: blogService.getAll
+  })
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedNoteappUser')
@@ -36,103 +64,87 @@ const App = () => {
     }
   }, [])
 
+  const blogs = result.data
+  const blogFormRef = useRef()
+
   const handleLogin = async (event) => {
     event.preventDefault()
 
     try {
-      const user = await loginService.login ({
-          username, password
+      const user = await loginService.login({
+        username, password
       })
-
-      window.localStorage.setItem(
-        'loggedNoteappUser', JSON.stringify(user)
-      ) 
-  
+      window.localStorage.setItem('loggedNoteappUser', JSON.stringify(user))
       blogService.setToken(user.token)
       setUser(user)
       setUsername('')
       setPassword('')
-      console.log("User object after login:", user)
-    } catch(error) {
+    } catch (error) {
       setErrorMessage('wrong username or password')
-        setTimeout(() => {
-          setErrorMessage(null);
-        }, 5000);
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 5000)
     }
   }
 
   const createBlog = (blogObject) => {
     blogFormRef.current.toggleVisibility()
-    blogService
-    .create(blogObject)
-    .then(returnedBlog => {
-      setBlogs(blogsBefore => [...blogsBefore, returnedBlog])
-      notificationDispatch({
-        type: 'NEW',
-        blog: returnedBlog
-      })
-      setTimeout(() => {
-        notificationDispatch({type: 'CLEAR'})
-      }, 5000)
-    })
+    newBlogMutation.mutate(blogObject)
   }
 
   const deleteBlog = (blogObject) => {
     if (window.confirm(`Remove blog ${blogObject.title} by ${blogObject.author}`)) {
-      blogService
-      .remove(blogObject.id)
-      .then(() => {
-        setBlogs(blogs.filter(blog => blogObject.id !== blog.id))
-      })
+      deleteBlogMutation.mutate(blogObject.id)
     }
   }
 
-  const sortedBlogs = blogs.sort((a, b) => b.likes - a.likes)
+  const voteBlog = (id, blogObject) => {
+    voteBlogMutation.mutate({ id, blogObject })
+  }
 
-  const blogFormRef = useRef()
+  const sortedBlogs = (blogs || []).sort((a, b) => b.likes - a.likes)
 
   return (
     <div>
       {user === null ? (
-      <div>
-        <h2>Log in to application</h2>
-        <ErrorMessage message={errorMessage} />
-
-        <LoginForm
-          username={username}
-          password={password}
-          handleLogin={handleLogin}
-          setUsername={setUsername}
-          setPassword={setPassword}
-        /> 
-      </div>
+        <div>
+          <h2>Log in to application</h2>
+          <ErrorMessage message={errorMessage} />
+          <LoginForm
+            username={username}
+            password={password}
+            handleLogin={handleLogin}
+            setUsername={setUsername}
+            setPassword={setPassword}
+          />
+        </div>
       ) : (
-      <div>
-        <h2>blogs</h2>
-        {notification.message && <Notification message={notification.message} />}
-        {user.name} logged in
-        <button onClick={() => {
-          setUser(null)
-          window.localStorage.removeItem('loggedNoteappUser')
+        <div>
+          <h2>blogs</h2>
+          {notification.message && <Notification message={notification.message} />}
+          {user.name} logged in
+          <button onClick={() => {
+            setUser(null)
+            window.localStorage.removeItem('loggedNoteappUser')
           }}>
-          logout
-        </button>
-        <Togglable showButtonLabel='new note' hideButtonLabel='cancel'ref={blogFormRef}>
-        <h2>create new</h2>
-        <NewBlogForm
-          title={title}
-          author={author}
-          blogUrl={blogUrl}
-          createBlog={createBlog}
-          setTitle={setTitle}
-          setAuthor={setAuthor}
-          setBlogUrl={setBlogUrl}
-        /> 
-        </Togglable>
-        {sortedBlogs.map(blog =>
-          <Blog key={blog.id} blog={blog} setBlogs={setBlogs} deleteBlog={deleteBlog} user={user}/>
-        )}
-      </div>
+            logout
+          </button>
+          <Togglable showButtonLabel='new note' hideButtonLabel='cancel' ref={blogFormRef}>
+            <h2>create new</h2>
+            <NewBlogForm
+              title={title}
+              author={author}
+              blogUrl={blogUrl}
+              createBlog={createBlog}
+              setTitle={setTitle}
+              setAuthor={setAuthor}
+              setBlogUrl={setBlogUrl}
+            />
+          </Togglable>
+          {sortedBlogs.map(blog =>
+            <Blog key={blog.id} blog={blog} deleteBlog={deleteBlog} voteBlog={voteBlog} user={user} />
+          )}
+        </div>
       )}
     </div>
   )
