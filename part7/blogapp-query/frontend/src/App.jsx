@@ -9,17 +9,19 @@ import Togglable from './components/Togglable'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import NotificationContext from './NotificationContext'
+import UserContext from './UserContext'
 
 const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [user, setUser] = useState(null)
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [blogUrl, setBlogUrl] = useState('')
   const [errorMessage, setErrorMessage] = useState(null)
 
   const [notification, notificationDispatch] = useContext(NotificationContext)
+  const [state, userDispatch] = useContext(UserContext)
+  const user = state.user
   const queryClient = useQueryClient()
 
   const newBlogMutation = useMutation({
@@ -55,28 +57,22 @@ const App = () => {
     queryFn: blogService.getAll
   })
 
-  useEffect(() => {
-    const loggedUserJSON = window.localStorage.getItem('loggedNoteappUser')
-    if (loggedUserJSON) {
-      const user = JSON.parse(loggedUserJSON)
-      setUser(user)
-      blogService.setToken(user.token)
-    }
-  }, [])
-
   const blogs = result.data
   const blogFormRef = useRef()
 
   const handleLogin = async (event) => {
     event.preventDefault()
-
     try {
       const user = await loginService.login({
         username, password
       })
       window.localStorage.setItem('loggedNoteappUser', JSON.stringify(user))
       blogService.setToken(user.token)
-      setUser(user)
+      userDispatch({
+        type: 'LOGIN',
+        username: user.username,
+        userId: user.id,
+      })
       setUsername('')
       setPassword('')
     } catch (error) {
@@ -124,8 +120,9 @@ const App = () => {
           {notification.message && <Notification message={notification.message} />}
           {user.name} logged in
           <button onClick={() => {
-            setUser(null)
+            userDispatch({type: 'LOGOUT'})
             window.localStorage.removeItem('loggedNoteappUser')
+            blogService.setToken(null)
           }}>
             logout
           </button>

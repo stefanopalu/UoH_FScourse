@@ -32,7 +32,7 @@ const Blog = ({ blog, deleteBlog, voteBlog, user }) => {
             {blog.user.name}
           </div>
         </Togglable>
-        {user.id === blog.user.id && ( 
+        {user.userId === blog.user.id && ( 
       <button onClick={() => deleteBlog(blog)}>Remove</button>
     )}
     </div>
@@ -52,7 +52,7 @@ Blog.propTypes = {
   }).isRequired,
   deleteBlog: PropTypes.func.isRequired,
   user: PropTypes.shape({
-    id: PropTypes.string.isRequired,
+    userId: PropTypes.string.isRequired,
   }).isRequired,
 }
   
