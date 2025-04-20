@@ -1,11 +1,14 @@
 const jwt = require("jsonwebtoken");
 const router = require("express").Router();
 const Blog = require("../models/blog");
+const Comment = require("../models/comment");
 const User = require("../models/user");
 const userExtractor = require("../utils/middleware").userExtractor;
 
 router.get("/", async (request, response) => {
-  const blogs = await Blog.find({}).populate("user", { username: 1, name: 1 });
+  const blogs = await Blog.find({})
+    .populate("user", { username: 1, name: 1 })
+    .populate("comments");
 
   response.json(blogs);
 });
@@ -71,6 +74,28 @@ router.put("/:id", async (request, response) => {
     new: true,
   }).populate("user", { username: 1, name: 1 });
   response.json(updatedBlog);
+});
+
+router.post("/:id/comments", userExtractor, async (request, response) => {
+  const blogId = request.params.id;
+  const content = request.body.content;
+
+  if (!content) {
+    return response.status(400).json({ error: "Content is missing" });
+  }
+
+  const newComment = new Comment({
+    content: content,
+    blog: blogId,
+  });
+
+  const savedComment = await newComment.save();
+
+  const blog = await Blog.findById(blogId);
+  blog.comments = blog.comments.concat(savedComment._id);
+  await blog.save();
+
+  response.status(201).json(savedComment);
 });
 
 module.exports = router;
