@@ -1,10 +1,13 @@
 import Togglable from "./Togglable";
 import PropTypes from "prop-types";
 import { useDispatch, useSelector } from 'react-redux'
-import { voteBlog } from "../reducers/blogsReducer";
+import { voteBlog, commentBlog } from "../reducers/blogsReducer";
 import { useParams } from 'react-router-dom'
+import { useState } from "react";
+
 
 const Blog = ({ deleteBlog, user }) => {
+  const [comment, setComment] = useState("");
   const dispatch = useDispatch()
   const id = useParams().id
   const blogs = useSelector((state) => state.blogs)
@@ -16,6 +19,13 @@ const Blog = ({ deleteBlog, user }) => {
 
   const addLike = (blog) => {
     dispatch(voteBlog(blog))
+  };
+
+  const addComment = (event) => {
+    event.preventDefault();
+
+    dispatch(commentBlog(blog.id, comment));
+    setComment("");
   };
 
   return (
@@ -31,6 +41,18 @@ const Blog = ({ deleteBlog, user }) => {
       )}
       <div>
       <h3>comments</h3>
+      <form onSubmit={addComment}>
+        <div>
+          <input
+            data-testid="comment"
+            type="text"
+            value={comment}
+            name="Comment"
+            onChange={({ target }) => setComment(target.value)}
+          />
+        </div>
+        <button type="submit">add comment</button>
+      </form>
         <ul>
           {blog.comments.map(comment => (
             <li key={comment.id}>{comment.content}</li>
