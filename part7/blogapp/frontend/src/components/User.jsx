@@ -1,4 +1,6 @@
 import { useParams } from 'react-router-dom'
+import { Card, ListGroup } from 'react-bootstrap';
+
   
   const User = ({ users }) => {
     const id = useParams().id
@@ -10,17 +12,18 @@ import { useParams } from 'react-router-dom'
     }
   
     return (
-      <div>
-        <h2>{user.name}</h2>
-        <p>added blogs</p>
-        <ul>
-            {user.blogs.map(blog => (
-                <li key={blog.id}>{blog.title}</li> 
-            ))
-            }
-        </ul>
-      </div>
+      <Card className='mb-4'>
+        <Card.Body>
+          <Card.Title>{user.name}</Card.Title>
+          <Card.Subtitle className='my-3'>Added blogs</Card.Subtitle>
+          <ListGroup variant="flush">
+              {user.blogs.map(blog => (
+                  <ListGroup.Item key={blog.id}>{blog.title}</ListGroup.Item> 
+              ))}
+          </ListGroup>
+        </Card.Body>
+      </Card>
     )
   }
 
-  export default User
+export default User

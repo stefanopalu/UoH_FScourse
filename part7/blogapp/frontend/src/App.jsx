@@ -15,9 +15,9 @@ import { setNotification } from "./reducers/notificationReducer";
 import blogService from "./services/blogs";
 import { initialiseBlogs, createBlog, deleteBlog } from "./reducers/blogsReducer";
 import { initialiseUsers } from './reducers/usersReducer'
-
 import loginService from "./services/login";
 import { storeUser } from "./reducers/userReducer"
+import { Navbar, Nav, Button, Container } from 'react-bootstrap';
 
 const App = () => {
   const [username, setUsername] = useState("");
@@ -100,7 +100,7 @@ useEffect(() => {
 
   return (
     <Router>
-    <div>
+    <Container>
       {user === null ? (
         <div>
           <h2>Log in to application</h2>
@@ -116,26 +116,31 @@ useEffect(() => {
         </div>
       ) : (
         <div>
-          <div>
-            <Link style={padding} to="/">blogs</Link>
-            <Link style={padding} to="/users">users</Link>
-            <span style={padding}>
-              {user.name} logged in
-              <button
+          <Navbar>
+            <Container>
+              <Nav className="me-auto">
+                <Nav.Link as={Link} to="/">blogs</Nav.Link>
+                <Nav.Link as={Link} to="/users">users</Nav.Link>
+              </Nav>
+              <Navbar.Text className="me-2">
+                {user.name} logged in
+              </Navbar.Text>
+              <Button variant="outline-secondary" size="sm"
                 onClick={() => {
                   dispatch(storeUser(null));
                   window.localStorage.removeItem("loggedNoteappUser");
                 }}>
-                logout
-              </button>
-            </span>
-          </div>
+                Logout
+              </Button>
+            
+            </Container>
+          </Navbar>
           <Notification message={notification} />
-          <h2>blog app</h2>
+          <h1 className='my-3'>Blog app</h1>
           <Routes>
             <Route path="/users" element={<Users users={users}/>} />
             <Route path="/users/:id" element={<User users={users}/>} />
-            <Route path="/blogs/:id" element={<Blog user={user} deleteBlog={deleteBlog}/>} />
+            <Route path="/blogs/:id" element={<Blog user={user} deleteBlog={handleDeleteBlog}/>} />
             <Route path="/" element={
                 <BlogList
                   title={title}
@@ -155,7 +160,7 @@ useEffect(() => {
             </Routes>
         </div>
       )}
-    </div>
+    </Container>
     </Router>
   );
 };

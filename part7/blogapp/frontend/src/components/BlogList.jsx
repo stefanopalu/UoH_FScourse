@@ -1,8 +1,8 @@
 import React from "react";
 import { Link } from 'react-router-dom'
-import Blog from "./Blog";
 import NewBlogForm from "./NewBlogForm";
 import Togglable from "./Togglable";
+import { Card } from 'react-bootstrap';
 
 const BlogList = ({
   title,
@@ -32,7 +32,7 @@ const BlogList = ({
         hideButtonLabel="cancel"
         ref={blogFormRef}
       >
-        <h2>create new</h2>
+        <h2>Create New Blog</h2>
         <NewBlogForm
           title={title}
           author={author}
@@ -45,9 +45,13 @@ const BlogList = ({
       </Togglable>
       <div>
       {sortedBlogs.map((blog) => (
-        <div style={blogStyle} className="blog">
-          <Link to={`/blogs/${blog.id}`}>{blog.title}</Link>
-        </div>
+        <Card className="mb-3">
+          <Card.Body>
+            <Link to={`/blogs/${blog.id}`}>
+              <Card.Title>{blog.title}</Card.Title>
+            </Link>
+          </Card.Body>
+        </Card>
       ))}
       </div>
     </div>
