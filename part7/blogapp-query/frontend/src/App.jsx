@@ -36,6 +36,20 @@ const App = () => {
     }
   })
 
+  const deleteBlogMutation = useMutation({
+    mutationFn: (id) => blogService.remove(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['blogs'] })
+    }
+  })
+
+  const voteBlogMutation = useMutation({
+    mutationFn: ({ id, blogObject }) => blogService.update(id, blogObject),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['blogs'] })
+    }
+  })
+
   const result = useQuery({
     queryKey: ['blogs'],
     queryFn: blogService.getAll
@@ -80,12 +94,12 @@ const App = () => {
 
   const deleteBlog = (blogObject) => {
     if (window.confirm(`Remove blog ${blogObject.title} by ${blogObject.author}`)) {
-      blogService
-        .remove(blogObject.id)
-        .then(() => {
-          setBlogs(blogs.filter(blog => blogObject.id !== blog.id))
-        })
+      deleteBlogMutation.mutate(blogObject.id)
     }
+  }
+
+  const voteBlog = (id, blogObject) => {
+    voteBlogMutation.mutate({ id, blogObject })
   }
 
   const sortedBlogs = (blogs || []).sort((a, b) => b.likes - a.likes)
@@ -128,7 +142,7 @@ const App = () => {
             />
           </Togglable>
           {sortedBlogs.map(blog =>
-            <Blog key={blog.id} blog={blog} deleteBlog={deleteBlog} user={user} />
+            <Blog key={blog.id} blog={blog} deleteBlog={deleteBlog} voteBlog={voteBlog} user={user} />
           )}
         </div>
       )}

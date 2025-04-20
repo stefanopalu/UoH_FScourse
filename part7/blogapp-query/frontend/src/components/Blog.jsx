@@ -2,7 +2,7 @@ import Togglable from "./Togglable"
 import PropTypes from 'prop-types'
 import blogService from '../services/blogs'
 
-const Blog = ({ blog, deleteBlog, user }) => {
+const Blog = ({ blog, deleteBlog, voteBlog, user }) => {
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -13,11 +13,7 @@ const Blog = ({ blog, deleteBlog, user }) => {
 
   const addLike = async () => {
     const updatedBlog = {...blog, likes: blog.likes +1}
-    const returnedBlog = await blogService.update(blog.id, updatedBlog)
-
-    setBlogs(blogsBefore =>
-      blogsBefore.map(blog => blog.id === returnedBlog.id ? returnedBlog : blog)
-    )
+    voteBlog(blog.id, updatedBlog)
   } 
 
   return (
