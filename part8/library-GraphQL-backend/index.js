@@ -94,21 +94,18 @@ let books = [
 ]
 
 const typeDefs = `
-  type Genre {
-    name: String!
-  }
-
   type Book {
     title: String!
     published: Int!
     author: String!
     id: ID!
-    genres: [Genre!]!
+    genres: [String!]!
   }
 
   type Query {
     bookCount: Int!
     authorCount: Int!
+    allBooks: [Book!]!
   }
 `
 
@@ -118,7 +115,8 @@ const resolvers = {
     authorCount: () => {
       const authors = new Set(books.map(book => book.author))
       return authors.size
-    }
+    },
+    allBooks: () => books,
   }
 }
 
