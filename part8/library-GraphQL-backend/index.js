@@ -92,6 +92,7 @@ let books = [
     genres: ['classic', 'revolution']
   },
 ]
+const { v1: uuid } = require('uuid')
 
 const typeDefs = `
   type Author {
@@ -115,6 +116,15 @@ const typeDefs = `
     allBooks(author: String, genre: String): [Book!]!
     allAuthors: [Author!]
   }
+
+  type Mutation {
+    addBook(
+        title: String!
+        published: Int!
+        author: String!
+        genres: [String!]!
+    ): Book
+  }
 `
 
 const resolvers = {
@@ -136,6 +146,20 @@ const resolvers = {
   Author: {
     bookCount: (author) => {
        return books.filter(book => book.author === author.name).length
+    }
+  },
+  Mutation: {
+    addBook: (root, args) => {
+        if (!authors.some(author => author.name === args.author)) {
+            authors.push({
+                name: args.author,
+                id: uuid(),
+                born: null,
+            })
+        }
+      const book = {...args, id: uuid()}
+      books = books.concat(book)
+      return book
     }
   }
 }
