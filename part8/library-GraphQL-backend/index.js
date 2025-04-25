@@ -94,6 +94,18 @@ const resolvers = {
   },
   Mutation: {
     addBook: async (root, args) => {
+      if (args.author.length < 3 || args.title.length < 2) {
+        throw new GraphQLError('Author name or title is too short', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+            invalidArgs: {
+              author: args.author,
+              title: args.title
+            },
+            reason: 'Author name or title is too short'
+          }
+        })
+      }
       let author = await Author.findOne({name: args.author})
 
       if (!author) {
@@ -101,7 +113,17 @@ const resolvers = {
           name: args.author,
           born: null
         })
-        await author.save()
+        try {
+          await author.save()
+        } catch (error) {
+          throw new GraphQLError('Saving author failed', {
+            extensions: {
+              code: 'BAD_USER_INPUT',
+              invalidArgs: args.name,
+              error
+            }
+          })
+        }
       }
       const book = new Book({
         title: args.title,
@@ -109,7 +131,20 @@ const resolvers = {
         author: author._id,
         genres: args.genres
       })
-      return book.save()
+
+      try {
+        await book.save()
+      } catch (error) {
+        throw new GraphQLError('Saving book failed', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+            invalidArgs: args.title,
+            error
+          }
+        })
+      }
+
+      return book
     },
     editAuthor: async (root, args) =>{
       let author = await Author.findOne({name: args.name})
