@@ -44,8 +44,9 @@ mongoose.connect(MONGODB_URI)
     id: ID!
   }
 
-  type Token {
+  type LoginResponse {
     value: String!
+    user: User!
   }
 
   type Query {
@@ -74,7 +75,7 @@ mongoose.connect(MONGODB_URI)
     login(
       username: String!
       password: String!
-    ): Token
+    ): LoginResponse
   }
 `
 
@@ -232,7 +233,13 @@ const resolvers = {
         id: user._id,
       }
 
-      return { value: jwt.sign(userForToken, process.env.JWT_SECRET)}
+      return { 
+        value: jwt.sign(userForToken, process.env.JWT_SECRET), 
+        user: {
+          username: user.username,
+          favoriteGenre: user.favoriteGenre
+        }
+      }
     }
   }
 }
