@@ -53,6 +53,12 @@ const typeDefs = `
       password: String!
     ): LoginResponse
   }
+
+  type Subscription {
+    bookAdded: Book!
+  }    
 `
+
+
 
 module.exports = typeDefs
