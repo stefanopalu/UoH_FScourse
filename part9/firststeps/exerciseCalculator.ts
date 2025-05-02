@@ -57,7 +57,7 @@ interface Results {
   
     return results;
   }
-
+  if (require.main === module) {
   try {
     const { target, hours } = parseArguments(process.argv.slice(2));
     console.log(calculateExercises(hours, target));
@@ -68,3 +68,6 @@ interface Results {
     }
     console.log(errorMessage);
   }
+}
+
+export { calculateExercises };
