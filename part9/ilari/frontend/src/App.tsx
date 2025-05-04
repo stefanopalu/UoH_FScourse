@@ -23,7 +23,7 @@ function App() {
         const message = error.response.data?.message || "Something went wrong with the server"; 
         setErrorMessage(message);
       } else {
-        setErrorMessage("Unexpected error occurred"); // Catch unexpected errors
+        setErrorMessage("Unexpected error occurred");
       }
     }
   }

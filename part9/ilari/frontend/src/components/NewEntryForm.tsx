@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { NewEntry } from '../types';
+import { NewEntry, Visibility, Weather } from '../types';
 
 interface NewEntryFormProps {
     onEntryCreate: (entryData: NewEntry) => void;
@@ -23,38 +23,50 @@ const NewEntryForm = ({ onEntryCreate }: NewEntryFormProps) => {
     return (
     <div>
         <form onSubmit={entryCreation}>
-       <div>
-         date
+        <fieldset>
+        <legend>date</legend>
+            <input
+                type="date"
+                value={date}
+                onChange={({ target }) => setDate(target.value)}
+            />
+        </fieldset>
+        <fieldset>
+        <legend>visibility</legend>
+         {Object.values(Visibility).map((value)=> (
+            <label key={value}>
+              <input
+                type="radio"
+                value={value}
+                checked={visibility === value}
+                onChange={({ target }) => setVisibility(target.value)}
+              />
+              {value.charAt(0) + value.slice(1)}
+            </label>
+         ))}
+       </fieldset>
+       <fieldset>
+         <legend>weather</legend>
+         {Object.values(Weather).map((value)=> (
+         <label key={value}>
          <input
-           type="text"
-           value={date}
-           onChange={({ target }) => setDate(target.value)}
-         />
-       </div>
-       <div>
-         visibility
-         <input
-           type="text"
-           value={visibility}
-           onChange={({ target }) => setVisibility(target.value)}
-         />
-       </div>
-       <div>
-         weather
-         <input
-           type="text"
-           value={weather}
+           type="radio"
+           value={value}
+           checked={weather === value}
            onChange={({ target }) => setWeather(target.value)}
          />
-       </div>
-       <div>
-         comment
+         {value.charAt(0) + value.slice(1)}
+         </label>
+         ))}
+       </fieldset>
+       <fieldset>
+         <legend>comment</legend>
          <input
            type="text"
            value={ comment}
            onChange={({ target }) => setComment(target.value)}
          />
-       </div>
+       </fieldset>
        <button type="submit">add</button>
      </form>
     </div>
