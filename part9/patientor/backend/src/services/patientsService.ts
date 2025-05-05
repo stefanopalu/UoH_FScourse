@@ -15,13 +15,32 @@ const getPatients = (): NoSsnPatient[] => {
 const addPatient = ( patient: NewPatient ): Patient => {
     const newPatient = {
         id: uuid(),
-        ...patient
+        ...patient,
+        entries: []
     };
     patients.push(newPatient);
     return newPatient;
 };
 
+const findById = (id: string): Patient | undefined => {
+  const patient = patients.find(patient => patient.id === id);
+
+  if (!patient) return undefined;
+
+  const { id: patientid, name, dateOfBirth, ssn, gender, occupation, entries } = patient
+  return {
+    id: patientid,
+    name,
+    ssn,
+    dateOfBirth,
+    gender: gender as Gender,
+    occupation,
+    entries
+  }
+};
+
 export default {
   getPatients,
-  addPatient
+  addPatient,
+  findById
 };
