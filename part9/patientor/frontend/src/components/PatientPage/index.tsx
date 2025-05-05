@@ -2,16 +2,17 @@ import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { Patient, Diagnosis } from "../../types";
 import patientService from "../../services/patients";
-import diagnosesService from "../../services/diagnoses"
 
 import { Male, Female } from "@mui/icons-material";
 import { Typography, Box } from "@mui/material";
 
+interface PatientPageProps {
+  diagnoses: Diagnosis[] | null;
+}
 
-const PatientPage = () => {
+const PatientPage = ({ diagnoses }: PatientPageProps) => {
   const { id } = useParams<{ id: string }>();
   const [patient, setPatient] = useState<Patient | null>(null);
-  const [diagnoses, setDiagnoses] = useState<Diagnosis[] | null>(null);
   
   useEffect(() => {
     const fetchPatient = async () => {
@@ -22,16 +23,6 @@ const PatientPage = () => {
     };
     void fetchPatient();
   }, [id]); 
-
-  useEffect(() => {
-    const fetchDiagnosesList = async () => {
-      const diagnoses = await diagnosesService.getAll();
-      setDiagnoses(diagnoses);
-    };
-    void fetchDiagnosesList();
-  }, []);
-
-  console.log(diagnoses)
 
   if (!patient) return <div>Loading...</div>;
   return (
