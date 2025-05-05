@@ -4,7 +4,7 @@ import { Patient } from "../../types";
 import patientService from "../../services/patients";
 
 import { Male, Female } from "@mui/icons-material";
-import { Typography } from "@mui/material";
+import { Typography, Box } from "@mui/material";
 
 
 const PatientPage = () => {
@@ -22,7 +22,6 @@ const PatientPage = () => {
   }, [id]); 
 
   if (!patient) return <div>Loading...</div>;
-
   return (
     <div>
       <Typography variant="h5">{patient.name}</Typography>
@@ -31,8 +30,21 @@ const PatientPage = () => {
           ) : (
             <Female color="secondary" />
           )}
-      <Typography variant="body1">SSN: {patient.ssn}</Typography>
-      <Typography variant="body1">Occupation: {patient.occupation}</Typography>
+      <Typography variant="body2">SSN: {patient.ssn}</Typography>
+      <Typography variant="body2">Occupation: {patient.occupation}</Typography>
+      <Typography variant="h6">Entries</Typography>
+      {patient.entries.map((entry) => (
+        <Box key={entry.id} style={{ marginBottom: '1rem' }}>
+          <Typography variant="subtitle2">{entry.date}</Typography>
+          <Typography variant="body2">{entry.description}</Typography>
+
+          {entry.diagnosisCodes?.map((code) => (
+            <Typography key={code} variant="body2" style={{ paddingLeft: '1rem' }}>
+                - {code}
+            </Typography>
+        ))}
+        </Box>
+     ))}
     </div>
   );
 };

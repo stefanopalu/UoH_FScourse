@@ -43,7 +43,7 @@ interface Discharge {
   criteria: string;
 }
 
-interface sickLeave {
+interface SickLeave {
   startDate: string;
   endDate: string;
 }
@@ -56,7 +56,7 @@ interface HospitalEntry extends BaseEntry {
 interface OccupationalHealthcareEntry extends BaseEntry {
   type: "OccupationalHealthcare";
   employerName: string;
-  sickLeave?: sickLeave;
+  sickLeave?: SickLeave;
 }
 
 interface HealthCheckEntry extends BaseEntry {
