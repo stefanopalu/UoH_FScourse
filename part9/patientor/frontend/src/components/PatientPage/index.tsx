@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { Patient, Diagnosis } from "../../types";
 import patientService from "../../services/patients";
-
+import EntryDetails from "./EntryDetails";
 import { Male, Female } from "@mui/icons-material";
 import { Typography, Box } from "@mui/material";
 
@@ -38,23 +38,7 @@ const PatientPage = ({ diagnoses }: PatientPageProps) => {
       <Typography variant="h6">Entries</Typography>
       {patient.entries.map((entry) => (
         <Box key={entry.id} style={{ marginBottom: '1rem' }}>
-          <Typography variant="subtitle2">{entry.date}</Typography>
-          <Typography variant="body2">{entry.description}</Typography>
-
-          {entry.diagnosisCodes && (
-            <ul>
-              {entry.diagnosisCodes.map((code) => {
-                const diagnosis = diagnoses?.find(d => d.code === code);
-                return (
-                  <li key={code}>
-                    <Typography variant="body2">
-                      {code} {diagnosis ? `: ${diagnosis.name}` : ''}
-                    </Typography>
-                  </li>
-                );
-              })}
-            </ul>
-          )}
+          <EntryDetails entry={entry} diagnoses={diagnoses} />
         </Box>
       ))}
     </div>
