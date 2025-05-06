@@ -3,9 +3,9 @@ import { useParams } from "react-router-dom";
 import { Patient, Diagnosis, EntryFormValues } from "../../types";
 import patientService from "../../services/patients";
 import EntryDetails from "./EntryDetails";
-import AddEntryForm from "./AddEntryForm";
+import AddEntryModal from "../AddEntryModal";
 import { Male, Female } from "@mui/icons-material";
-import { Typography, Box } from "@mui/material";
+import { Typography, Box, Button } from "@mui/material";
 
 interface PatientPageProps {
   diagnoses: Diagnosis[] | null;
@@ -15,6 +15,8 @@ interface PatientPageProps {
 const PatientPage = ({ diagnoses }: PatientPageProps) => {
   const { id } = useParams<{ id: string }>();
   const [patient, setPatient] = useState<Patient | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [error, setError] = useState<string | undefined>();
   
   useEffect(() => {
     const fetchPatient = async () => {
@@ -32,7 +34,14 @@ const PatientPage = ({ diagnoses }: PatientPageProps) => {
     console.log('Submitting entry:', entry);
     const newEntry = await patientService.createEntry(patient.id, entry)
     setPatient({...patient, entries: [...patient.entries, newEntry]})
+    setModalOpen(false);
   }
+
+  const openModal = () => setModalOpen(true);
+  const closeModal = () => {
+    setModalOpen(false);
+    setError(undefined);
+  };
 
   return (
     <div>
@@ -44,7 +53,19 @@ const PatientPage = ({ diagnoses }: PatientPageProps) => {
           )}
       <Typography variant="body2">SSN: {patient.ssn}</Typography>
       <Typography variant="body2">Occupation: {patient.occupation}</Typography>
-      <AddEntryForm onSubmit={onSubmit}/>
+
+      <Button variant="contained" onClick={openModal}>
+        Add New Entry
+      </Button>
+
+      <AddEntryModal
+        modalOpen={modalOpen}
+        onClose={closeModal}
+        onSubmit={onSubmit}
+        error={error}
+        diagnoses={diagnoses}
+      />
+
       <Typography mt={8} variant="h6">Entries</Typography>
       {patient.entries.map((entry) => (
         <Box key={entry.id} style={{ marginBottom: '1rem' }}>
