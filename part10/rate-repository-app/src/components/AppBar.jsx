@@ -10,7 +10,8 @@ const styles = StyleSheet.create({
   container: {
     paddingTop: Constants.statusBarHeight,
     backgroundColor: '#24292e',
-    padding: 20,
+    paddingHorizontal: 20,
+    paddingBottom: 10,
   },
   scrollContent: {
     flexDirection: 'row',
@@ -21,7 +22,7 @@ const styles = StyleSheet.create({
   text: {
     color: 'white',
     fontWeight: 'bold',
-    fontSize: 16,
+    fontSize: 14,
   },
 });
 
@@ -44,13 +45,26 @@ const AppBar = () => {
           </Link>
 
           {data?.me ? (
-            <Pressable onPress={handleSignOut}>
-              <Text style={styles.text}>Sign Out</Text>
-            </Pressable>
+            <>
+              <Link to="/newreview">
+                <Text style={styles.text}>Create a review</Text>
+              </Link>
+              <Link to="/userreviews">
+                <Text style={styles.text}>My reviews</Text>
+              </Link>
+              <Pressable onPress={handleSignOut}>
+                <Text style={styles.text}>Sign Out</Text>
+              </Pressable>
+            </>
           ) : (
-          <Link to="/signin">
-            <Text style={styles.text}>Sign In</Text>
-          </Link>
+            <>
+              <Link to="/signin">
+                <Text style={styles.text}>Sign In</Text>
+              </Link>
+              <Link to="/signup">
+                <Text style={styles.text}>Sign Up</Text>
+              </Link>
+            </>
           )}
         </View>
       </ScrollView>

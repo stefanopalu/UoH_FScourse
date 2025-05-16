@@ -55,9 +55,9 @@ const styles = StyleSheet.create({
   };
 
   const RepositoryItem = (props) => {
-    const { stargazersCount, forksCount, ratingAverage, description, fullName, reviewCount, language, ownerAvatarUrl } = props;
+    const { stargazersCount, forksCount, ratingAverage, description, fullName, reviewCount, language, ownerAvatarUrl, children } = props;
     return (
-      <View style={styles.container}>
+      <View testID="repositoryItem" style={styles.container}>
         <View style={styles.row}>
           <Image source={{ uri: ownerAvatarUrl }} style={styles.avatar} />
           <View style={styles.infoContainer}>
@@ -89,7 +89,9 @@ const styles = StyleSheet.create({
             <Text color="textSecondary">Rating</Text>
           </View>
         </View>
+        {children}
       </View>
     );
   };
+  
 export default RepositoryItem
